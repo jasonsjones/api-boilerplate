@@ -1,15 +1,19 @@
-import express from 'express';
-import path from 'path';
+import 'reflect-metadata';
+import express, { Application } from 'express';
 import { ApolloServer } from 'apollo-server-express';
-import { importSchema } from 'graphql-import';
-import { resolvers } from './resolvers';
+import { buildSchema } from 'type-graphql';
+import UserResolver from './resolvers/UserResolver';
+
+const bootstrapApolloServer = async (expressApp: Application): Promise<ApolloServer> => {
+    const schema = await buildSchema({ resolvers: [UserResolver] });
+    const apolloServer = new ApolloServer({ schema });
+    apolloServer.applyMiddleware({ app: expressApp });
+    return apolloServer;
+};
 
 const app = express();
 app.get('/', (_, res) => res.json({ success: true, message: 'welcome to a new stack' }));
 
-const typeDefs = importSchema(path.join(__dirname, 'schema.graphql'));
-const apolloServer = new ApolloServer({ typeDefs, resolvers });
-
-apolloServer.applyMiddleware({ app });
+bootstrapApolloServer(app);
 
 export default app;
