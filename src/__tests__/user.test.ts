@@ -2,10 +2,10 @@ import request from 'supertest';
 import { getConnection } from 'typeorm';
 import app from '../app';
 import { User } from '../entity/User';
-import { createTypeormConnection } from '../utils/createTypeormConnection';
+import { createDbConnection } from '../utils/createDbConnection';
 
 beforeAll(() => {
-    return createTypeormConnection();
+    return createDbConnection();
 });
 
 afterAll(() => {
