@@ -3,7 +3,7 @@ version: '3'
 services:
     postgres:
         image: postgres:11.5
-        container_name: 'pdb'
+        container_name: pdb
         ports:
             - '5432:5432'
         restart: unless-stopped
@@ -12,16 +12,16 @@ services:
         networks:
             - postgres
         volumes:
-            - postgres:/var/lib/postgres/data
+            - ./data/db:/var/lib/postgresql/data
 
     pgadmin:
-        container_name: 'pgadmin'
+        container_name: pgadmin
         image: dpage/pgadmin4
         environment:
             PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
             PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
         volumes:
-            - pgadmin:/root/.pgadmin
+            - ./data/pgadmin:/root/.pgadmin
         ports:
             - '${PGADMIN_PORT:-5050}:80'
         networks:
@@ -31,7 +31,3 @@ services:
 networks:
     postgres:
         driver: bridge
-
-volumes:
-    postgres:
-    pgadmin:
