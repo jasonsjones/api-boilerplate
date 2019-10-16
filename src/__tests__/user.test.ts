@@ -78,6 +78,75 @@ describe('mutation to create a user', () => {
                 expect(error).toHaveProperty('message');
             });
     });
+
+    it('returns an error if the email is not long enough', () => {
+        const variables = {
+            email: 'jj',
+            password
+        };
+
+        return request(app)
+            .post('/graphql')
+            .set('Content-Type', 'application/json')
+            .send({ query, variables })
+            .then(res => {
+                const json = res.body.data.registerUser;
+                expect(json).toHaveProperty('success');
+                expect(json).toHaveProperty('message');
+                expect(json).toHaveProperty('error');
+                expect(json.success).toBeFalsy();
+                expect(json.error).toHaveLength(1);
+                const error = json.error[0];
+                expect(error).toHaveProperty('path');
+                expect(error).toHaveProperty('message');
+            });
+    });
+
+    it('returns an error if the password is not long enough', () => {
+        const variables = {
+            email: 'weak-password@example.com',
+            password: 'ab'
+        };
+
+        return request(app)
+            .post('/graphql')
+            .set('Content-Type', 'application/json')
+            .send({ query, variables })
+            .then(res => {
+                const json = res.body.data.registerUser;
+                expect(json).toHaveProperty('success');
+                expect(json).toHaveProperty('message');
+                expect(json).toHaveProperty('error');
+                expect(json.success).toBeFalsy();
+                expect(json.error).toHaveLength(1);
+                const error = json.error[0];
+                expect(error).toHaveProperty('path');
+                expect(error).toHaveProperty('message');
+            });
+    });
+
+    it('returns multiple errors if the email and password are not long enough', () => {
+        const variables = {
+            email: 'ab',
+            password: 'cd'
+        };
+
+        return request(app)
+            .post('/graphql')
+            .set('Content-Type', 'application/json')
+            .send({ query, variables })
+            .then(res => {
+                const json = res.body.data.registerUser;
+                expect(json).toHaveProperty('success');
+                expect(json).toHaveProperty('message');
+                expect(json).toHaveProperty('error');
+                expect(json.success).toBeFalsy();
+                expect(json.error).toHaveLength(2);
+                const error = json.error[0];
+                expect(error).toHaveProperty('path');
+                expect(error).toHaveProperty('message');
+            });
+    });
 });
 
 describe('query for allUsers', () => {
