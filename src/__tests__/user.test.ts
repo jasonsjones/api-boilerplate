@@ -3,6 +3,7 @@ import { getConnection } from 'typeorm';
 import app from '../app';
 import { User } from '../entity/User';
 import { createDbConnection } from '../utils/createDbConnection';
+import UserService from '../services/UserService';
 
 beforeAll(() => {
     return createDbConnection();
@@ -82,9 +83,9 @@ describe('mutation to create a user', () => {
 describe('query for allUsers', () => {
     beforeAll(async () => {
         await getConnection().manager.clear(User);
-        const user1 = User.create({ email: 'test-user1@example.com', password: 'plaintext' });
-        const user2 = User.create({ email: 'test-user2@example.com', password: 'plaintext' });
-        return user1.save().then(() => user2.save());
+        return UserService.createUser('test-user1@example.com', 'plaintext').then(() =>
+            UserService.createUser('test-user2@example.com', 'plaintext')
+        );
     });
 
     it('returns all the users', () => {
