@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { v4 } from 'uuid';
 import { User } from '../entity/User';
 import { Error } from '../types';
 
@@ -20,6 +21,7 @@ class UserService {
         const hashedPassword = await bcrypt.hash(password, 12);
         try {
             const user = User.create({ email, password: hashedPassword });
+            user.emailVerificationToken = v4();
             return user.save();
         } catch (err) {
             console.error(err);

@@ -5,6 +5,13 @@ import { User } from '../entity/User';
 import { createDbConnection } from '../utils/createDbConnection';
 import UserService from '../services/UserService';
 
+const makeGraphQLCall = (query: string, variables = {}): request.Test => {
+    return request(app)
+        .post('/graphql')
+        .set('Content-Type', 'application/json')
+        .send({ query, variables });
+};
+
 beforeAll(() => {
     return createDbConnection();
 });
@@ -35,10 +42,7 @@ describe('mutation to create a user', () => {
             password
         };
 
-        return request(app)
-            .post('/graphql')
-            .set('Content-Type', 'application/json')
-            .send({ query, variables })
+        return makeGraphQLCall(query, variables)
             .then(res => {
                 const json = res.body.data.registerUser;
                 expect(json).toHaveProperty('success');
@@ -62,21 +66,17 @@ describe('mutation to create a user', () => {
             password
         };
 
-        return request(app)
-            .post('/graphql')
-            .set('Content-Type', 'application/json')
-            .send({ query, variables })
-            .then(res => {
-                const json = res.body.data.registerUser;
-                expect(json).toHaveProperty('success');
-                expect(json).toHaveProperty('message');
-                expect(json).toHaveProperty('error');
-                expect(json.success).toBeFalsy();
-                expect(json.error).toHaveLength(1);
-                const error = json.error[0];
-                expect(error).toHaveProperty('path');
-                expect(error).toHaveProperty('message');
-            });
+        return makeGraphQLCall(query, variables).then(res => {
+            const json = res.body.data.registerUser;
+            expect(json).toHaveProperty('success');
+            expect(json).toHaveProperty('message');
+            expect(json).toHaveProperty('error');
+            expect(json.success).toBeFalsy();
+            expect(json.error).toHaveLength(1);
+            const error = json.error[0];
+            expect(error).toHaveProperty('path');
+            expect(error).toHaveProperty('message');
+        });
     });
 
     it('returns an error if the email is not long enough', () => {
@@ -85,21 +85,17 @@ describe('mutation to create a user', () => {
             password
         };
 
-        return request(app)
-            .post('/graphql')
-            .set('Content-Type', 'application/json')
-            .send({ query, variables })
-            .then(res => {
-                const json = res.body.data.registerUser;
-                expect(json).toHaveProperty('success');
-                expect(json).toHaveProperty('message');
-                expect(json).toHaveProperty('error');
-                expect(json.success).toBeFalsy();
-                expect(json.error).toHaveLength(1);
-                const error = json.error[0];
-                expect(error).toHaveProperty('path');
-                expect(error).toHaveProperty('message');
-            });
+        return makeGraphQLCall(query, variables).then(res => {
+            const json = res.body.data.registerUser;
+            expect(json).toHaveProperty('success');
+            expect(json).toHaveProperty('message');
+            expect(json).toHaveProperty('error');
+            expect(json.success).toBeFalsy();
+            expect(json.error).toHaveLength(1);
+            const error = json.error[0];
+            expect(error).toHaveProperty('path');
+            expect(error).toHaveProperty('message');
+        });
     });
 
     it('returns an error if the password is not long enough', () => {
@@ -108,21 +104,17 @@ describe('mutation to create a user', () => {
             password: 'ab'
         };
 
-        return request(app)
-            .post('/graphql')
-            .set('Content-Type', 'application/json')
-            .send({ query, variables })
-            .then(res => {
-                const json = res.body.data.registerUser;
-                expect(json).toHaveProperty('success');
-                expect(json).toHaveProperty('message');
-                expect(json).toHaveProperty('error');
-                expect(json.success).toBeFalsy();
-                expect(json.error).toHaveLength(1);
-                const error = json.error[0];
-                expect(error).toHaveProperty('path');
-                expect(error).toHaveProperty('message');
-            });
+        return makeGraphQLCall(query, variables).then(res => {
+            const json = res.body.data.registerUser;
+            expect(json).toHaveProperty('success');
+            expect(json).toHaveProperty('message');
+            expect(json).toHaveProperty('error');
+            expect(json.success).toBeFalsy();
+            expect(json.error).toHaveLength(1);
+            const error = json.error[0];
+            expect(error).toHaveProperty('path');
+            expect(error).toHaveProperty('message');
+        });
     });
 
     it('returns multiple errors if the email and password are not long enough', () => {
@@ -131,21 +123,17 @@ describe('mutation to create a user', () => {
             password: 'cd'
         };
 
-        return request(app)
-            .post('/graphql')
-            .set('Content-Type', 'application/json')
-            .send({ query, variables })
-            .then(res => {
-                const json = res.body.data.registerUser;
-                expect(json).toHaveProperty('success');
-                expect(json).toHaveProperty('message');
-                expect(json).toHaveProperty('error');
-                expect(json.success).toBeFalsy();
-                expect(json.error).toHaveLength(2);
-                const error = json.error[0];
-                expect(error).toHaveProperty('path');
-                expect(error).toHaveProperty('message');
-            });
+        return makeGraphQLCall(query, variables).then(res => {
+            const json = res.body.data.registerUser;
+            expect(json).toHaveProperty('success');
+            expect(json).toHaveProperty('message');
+            expect(json).toHaveProperty('error');
+            expect(json.success).toBeFalsy();
+            expect(json.error).toHaveLength(2);
+            const error = json.error[0];
+            expect(error).toHaveProperty('path');
+            expect(error).toHaveProperty('message');
+        });
     });
 });
 
@@ -163,22 +151,22 @@ describe('query for allUsers', () => {
                 allUsers {
                     id
                     email
+                    isEmailVerified
+                    emailVerificationToken
                     createdAt
                 }
             }
         `;
 
-        return request(app)
-            .post('/graphql')
-            .set('Content-Type', 'application/json')
-            .send({ query })
-            .then(res => {
-                const { data } = res.body;
-                expect(data.allUsers).toHaveLength(2);
-                const firstUser = data.allUsers[0];
-                expect(firstUser).toHaveProperty('id');
-                expect(firstUser).toHaveProperty('email');
-                expect(firstUser).toHaveProperty('createdAt');
-            });
+        return makeGraphQLCall(query).then(res => {
+            const { data } = res.body;
+            expect(data.allUsers).toHaveLength(2);
+            const firstUser = data.allUsers[0];
+            expect(firstUser).toHaveProperty('id');
+            expect(firstUser).toHaveProperty('email');
+            expect(firstUser).toHaveProperty('isEmailVerified');
+            expect(firstUser).toHaveProperty('emailVerificationToken');
+            expect(firstUser).toHaveProperty('createdAt');
+        });
     });
 });

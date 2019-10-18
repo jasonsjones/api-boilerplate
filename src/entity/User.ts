@@ -12,8 +12,16 @@ export class User extends BaseEntity {
     @Column('varchar', { length: 255 })
     email: string;
 
-    @Column('text')
+    @Column()
     password: string;
+
+    @Field()
+    @Column({ default: false })
+    isEmailVerified: boolean;
+
+    @Field()
+    @Column()
+    emailVerificationToken: string;
 
     @Field()
     @CreateDateColumn()
