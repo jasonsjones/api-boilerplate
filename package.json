@@ -33,10 +33,13 @@
         "typeorm": "0.2.19"
     },
     "scripts": {
+        "build": "tsc",
+        "clean": "rm -rf dist/",
         "dev": "NODE_ENV=development nodemon --exec ts-node src/index.ts",
         "docker:up": "docker-compose up -d",
         "docker:down": "docker-compose down -v",
         "lint": "eslint src/**/*.ts",
+        "start": "NODE_ENV=production node dist/index.js",
         "test": "NODE_ENV=testing jest"
     },
     "jest": {
