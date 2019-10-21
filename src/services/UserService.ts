@@ -11,7 +11,12 @@ class UserService {
         return User.find();
     }
 
-    static async createUser(email: string, password: string): Promise<User | Error[]> {
+    static async createUser(
+        firstName: string,
+        lastName: string,
+        email: string,
+        password: string
+    ): Promise<User | Error[]> {
         const errors = await UserService.validateUserInfo(email, password);
 
         if (errors.length > 0) {
@@ -20,7 +25,7 @@ class UserService {
 
         const hashedPassword = await bcrypt.hash(password, 12);
         try {
-            const user = User.create({ email, password: hashedPassword });
+            const user = User.create({ firstName, lastName, email, password: hashedPassword });
             user.emailVerificationToken = v4();
             return user.save();
         } catch (err) {

@@ -9,6 +9,14 @@ export class User extends BaseEntity {
     id: string;
 
     @Field()
+    @Column()
+    firstName: string;
+
+    @Field()
+    @Column()
+    lastName: string;
+
+    @Field()
     @Column('varchar', { length: 255 })
     email: string;
 

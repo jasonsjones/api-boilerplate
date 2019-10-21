@@ -21,11 +21,13 @@ afterAll(() => {
 });
 
 describe('mutation to create a user', () => {
+    const firstName = 'Test';
+    const lastName = 'User';
     const email = 'test-user@example.com';
     const password = '123456';
     const query = `
-        mutation RegisterUser($email: String!, $password: String!) {
-            registerUser(email: $email, password: $password) {
+        mutation RegisterUser($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
+            registerUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
                 success
                 message
                 error {
@@ -38,6 +40,8 @@ describe('mutation to create a user', () => {
 
     it('creates a user', () => {
         const variables = {
+            firstName,
+            lastName,
             email,
             password
         };
@@ -62,6 +66,8 @@ describe('mutation to create a user', () => {
 
     it('returns an error if the email already exists', () => {
         const variables = {
+            firstName,
+            lastName,
             email,
             password
         };
@@ -81,6 +87,8 @@ describe('mutation to create a user', () => {
 
     it('returns an error if the email is not long enough', () => {
         const variables = {
+            firstName,
+            lastName,
             email: 'jj',
             password
         };
@@ -100,6 +108,8 @@ describe('mutation to create a user', () => {
 
     it('returns an error if the password is not long enough', () => {
         const variables = {
+            firstName,
+            lastName,
             email: 'weak-password@example.com',
             password: 'ab'
         };
@@ -119,6 +129,8 @@ describe('mutation to create a user', () => {
 
     it('returns multiple errors if the email and password are not long enough', () => {
         const variables = {
+            firstName,
+            lastName,
             email: 'ab',
             password: 'cd'
         };
@@ -140,8 +152,8 @@ describe('mutation to create a user', () => {
 describe('query for allUsers', () => {
     beforeAll(async () => {
         await getConnection().manager.clear(User);
-        return UserService.createUser('test-user1@example.com', 'plaintext').then(() =>
-            UserService.createUser('test-user2@example.com', 'plaintext')
+        return UserService.createUser('Test', 'User1', 'test-user1@example.com', 'plaintext').then(
+            () => UserService.createUser('Test', 'User2', 'test-user2@example.com', 'plaintext')
         );
     });
 
@@ -150,6 +162,8 @@ describe('query for allUsers', () => {
             query {
                 allUsers {
                     id
+                    firstName
+                    lastName
                     email
                     isEmailVerified
                     emailVerificationToken
@@ -164,6 +178,8 @@ describe('query for allUsers', () => {
             const firstUser = data.allUsers[0];
             expect(firstUser).toHaveProperty('id');
             expect(firstUser).toHaveProperty('email');
+            expect(firstUser).toHaveProperty('firstName');
+            expect(firstUser).toHaveProperty('lastName');
             expect(firstUser).toHaveProperty('isEmailVerified');
             expect(firstUser).toHaveProperty('emailVerificationToken');
             expect(firstUser).toHaveProperty('createdAt');

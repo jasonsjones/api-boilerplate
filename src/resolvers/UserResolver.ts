@@ -12,10 +12,12 @@ class UserResolver {
 
     @Mutation(() => MutationResponse)
     async registerUser(
+        @Arg('firstName') firstName: string,
+        @Arg('lastName') lastName: string,
         @Arg('email') email: string,
         @Arg('password') password: string
     ): Promise<MutationResponse> {
-        const response = await UserService.createUser(email, password);
+        const response = await UserService.createUser(firstName, lastName, email, password);
         if (Array.isArray(response)) {
             return {
                 success: false,
